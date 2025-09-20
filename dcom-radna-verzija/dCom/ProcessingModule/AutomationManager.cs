@@ -91,11 +91,11 @@ namespace ProcessingModule
                 }
                 if (points[5].RawValue == 1)
                 {
-                    value += 3;
+                    value += 2;
                 }
                 if (points[6].RawValue == 1)
                 {
-                    value += 4;
+                    value += 3;
                 }
 
                 if (value <= points[4].ConfigItem.LowLimit)
