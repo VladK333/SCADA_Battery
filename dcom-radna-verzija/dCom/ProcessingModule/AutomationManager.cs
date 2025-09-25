@@ -79,55 +79,94 @@ namespace ProcessingModule
             {
                 List<IPoint> points = storage.GetPoints(list);
 
-                value = (int)egu.ConvertToEGU(points[4].ConfigItem.ScaleFactor, points[4].ConfigItem.Deviation, points[4].RawValue);
+
+                value = (int)egu.ConvertToEGU(
+                    points[4].ConfigItem.ScaleFactor,
+                    points[4].ConfigItem.Deviation,
+                    points[4].RawValue);
+
 
                 if (points[0].RawValue == 1 || points[1].RawValue == 1 || points[2].RawValue == 1)
                 {
                     value -= 1;
                 }
+
+
                 if (points[3].RawValue == 1)
                 {
                     value -= 3;
                 }
+
+
                 if (points[5].RawValue == 1)
                 {
                     value += 2;
                 }
+
+
                 if (points[6].RawValue == 1)
                 {
                     value += 3;
                 }
 
+
                 if (value <= points[4].ConfigItem.LowLimit)
                 {
-                    processingManager.ExecuteWriteCommand(points[4].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
+                    processingManager.ExecuteWriteCommand(points[4].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
 
-                    processingManager.ExecuteWriteCommand(points[3].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, socket.Address, 0);
 
-                    processingManager.ExecuteWriteCommand(points[5].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, power1.Address, 1);
-                    processingManager.ExecuteWriteCommand(points[6].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, power2.Address, 1);
+                    processingManager.ExecuteWriteCommand(points[3].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, socket.Address, 0);
+
+                    processingManager.ExecuteWriteCommand(points[5].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, power1.Address, 0);
+
+                    processingManager.ExecuteWriteCommand(points[6].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, power2.Address, 1);
                 }
+
                 else if (value >= points[4].ConfigItem.EGU_Max)
                 {
                     value = 100;
-                    processingManager.ExecuteWriteCommand(points[4].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
+                    processingManager.ExecuteWriteCommand(points[4].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
 
-                    processingManager.ExecuteWriteCommand(points[5].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, power1.Address, 0);
-                    processingManager.ExecuteWriteCommand(points[6].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, power2.Address, 0);
+
+                    processingManager.ExecuteWriteCommand(points[5].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, power1.Address, 0);
+                    processingManager.ExecuteWriteCommand(points[6].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, power2.Address, 0);
                 }
+
                 else
                 {
-                    processingManager.ExecuteWriteCommand(points[4].ConfigItem, configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
+                    processingManager.ExecuteWriteCommand(points[4].ConfigItem,
+                        configuration.GetTransactionId(), configuration.UnitAddress, battery.Address, value);
                 }
 
-               
+                if (points[5].RawValue == 1 && points[6].RawValue == 1)
+                {
+                    if (points[6].RawValue == 1)
+                    {
+                        processingManager.ExecuteWriteCommand(points[5].ConfigItem,
+                            configuration.GetTransactionId(), configuration.UnitAddress, power1.Address, 0);
+                    }
+
+                    if (points[5].RawValue == 1)
+                    {
+                        processingManager.ExecuteWriteCommand(points[6].ConfigItem,
+                            configuration.GetTransactionId(), configuration.UnitAddress, power2.Address, 0);
+                    }
+                }
+
                 automationTrigger.WaitOne();
-               
             }
+
         }
 
-		#region IDisposable Support
-		private bool disposedValue = false; // To detect redundant calls
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
 
 
         /// <summary>
